@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 int main() {
+    
     //user input
     double z0;
     printf("Enter starting altitude (m): ");
@@ -58,7 +59,7 @@ int main() {
     int total_steps = step;
     double total_time = total_steps * delta_T;
       
-    double z_final;
+    double z_final = z; //changed
     if(z<0){
         z_final=0;
     }
