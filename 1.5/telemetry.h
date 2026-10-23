@@ -5,5 +5,6 @@
 
 void telemetry_task(void);
 int telem_buff_remove(telemetry_packet_s *out);
+void telem_get_latest(telemetry_packet_s *out);
 
 #endif

@@ -36,8 +36,20 @@ int sensor_buff_remove(sensor_sample_s *out)
 
 void sensor_task(void)
 {
-    sensor_sample_s sample = {0};
-    sample.timestamp = get_ms() / 1000.0f;
+    static uint16_t fuel = FUEL;
+    sensor_sample_s sample;
+
+    if (fuel > 0) {
+        sample.acceleration = A_THRUST - GRAVITY;
+        fuel--;
+    } else {
+        sample.acceleration = -GRAVITY;
+    }
+
+    sample.fuel = fuel;
+    sample.timestamp = get_ms()/1000.0f; //milli to secs
     sensor_buff_add(&sample);
-    printf("sensor: pushed t=%.3f\n", sample.timestamp);
+        
+    printf("sensor: t=%.3f a=%.2f fuel=%d\n", sample.timestamp, sample.acceleration, sample.fuel);
+
 }

@@ -19,7 +19,7 @@ static int telem_buff_add(const telemetry_packet_s *packet)
     telem_buff[telem_front] = *packet;
     telem_front = (telem_front + 1) % TELEM_BUFF_SIZE;
     telem_count++;
-    return 1;
+    return 1; //so can print instead of A w zero that doesnt print
 }
 
 int telem_buff_remove(telemetry_packet_s *out)
@@ -33,18 +33,35 @@ int telem_buff_remove(telemetry_packet_s *out)
     return 1;
 }
 
+static telemetry_packet_s latest = {0};
+
 void telemetry_task(void)
 {
+    static double velocity = V0;
+    static double altitude = Z0;
+    static float last_t = 0.0f;
     sensor_sample_s sample;
-    telemetry_packet_s packet = {0};
+    telemetry_packet_s packet;
 
     while (sensor_buff_remove(&sample)) {
-        packet.sensor = sample;
+        double dt = sample.timestamp - last_t;
+        last_t = sample.timestamp;
 
-        if (telem_buff_add(&packet)) {
-            printf("  telemetry: added t=%.3f\n", sample.timestamp);
-        } else {
-            printf("  telemetry: REJECTED t=%.3f (buffer full)\n", sample.timestamp);
+        velocity += sample.acceleration * dt; //physics equations from d2
+        altitude += velocity * dt;
+
+        packet.sensor = sample; //d2
+        packet.velocity = velocity;
+        packet.altitude = altitude;
+        latest = packet;
+
+        if (!telem_buff_add(&packet)) { //saftey print statement
+            printf("  telemetry: REJECTED t=%.3f\n", sample.timestamp);
         }
     }
+}
+
+void telem_get_latest(telemetry_packet_s *out)
+{
+    *out = latest;
 }
