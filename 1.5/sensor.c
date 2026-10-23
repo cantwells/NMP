@@ -2,26 +2,26 @@
 #include "timer.h"
 #include <stdio.h>
 
-#define SENSOR_BUFF_SIZE 5
+#define SENSOR_BUFF_SIZE 8
 //throws away oldest item when full
 
 static sensor_sample_s sensor_buff[SENSOR_BUFF_SIZE]; //ring, static so telemetry cant mess w it
-static int sensor_front = 0;
-static int sensor_back= 0;
+static int sensor_head = 0;
+static int sensor_tail= 0;
 static int sensor_count = 0;
 
 static void sensor_buff_add(sensor_sample_s *sample)
 {
     if (sensor_count == SENSOR_BUFF_SIZE) {
-        sensor_back = (sensor_back + 1) % SENSOR_BUFF_SIZE; //wrap around
+        sensor_tail = (sensor_tail + 1) % SENSOR_BUFF_SIZE; //wrap around
     sensor_count--;
+        //printf("[bufA] full, dropped oldest\n");
     }
 
-    sensor_buff[sensor_front]= *sample;
-    sensor_front = (sensor_front+1)% SENSOR_BUFF_SIZE;
+    sensor_buff[sensor_head]= *sample;
+    sensor_head = (sensor_head+1)% SENSOR_BUFF_SIZE;
     sensor_count++;
 
-    //printf("[bufA] full, dropped oldest\n");
 }
 
 int sensor_buff_remove(sensor_sample_s *out)
@@ -29,12 +29,9 @@ int sensor_buff_remove(sensor_sample_s *out)
     if (sensor_count == 0) {
         return 0;
     }
-    *out = sensor_buff[sensor_back];
-    sensor_back = (sensor_back + 1) % SENSOR_BUFF_SIZE;
+    *out = sensor_buff[sensor_tail];
+    sensor_tail = (sensor_tail + 1) % SENSOR_BUFF_SIZE;
     sensor_count--;
-        
-    //printf("[bufB] full, rejected t=%.1f\n", packet->sensor.timestamp);
-
     return 1;
 }
 

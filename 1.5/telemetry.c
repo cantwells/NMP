@@ -2,12 +2,12 @@
 #include "sensor.h"
 #include <stdio.h>
 
-#define TELEM_BUFF_SIZE 5
+#define TELEM_BUFF_SIZE 8
 //rejects new item when full
 
 static telemetry_packet_s telem_buff[TELEM_BUFF_SIZE];
-static int telem_front = 0;
-static int telem_back = 0;
+static int telem_head = 0;
+static int telem_tail = 0;
 static int telem_count = 0;
 
 static int telem_buff_add(const telemetry_packet_s *packet)
@@ -16,8 +16,8 @@ static int telem_buff_add(const telemetry_packet_s *packet)
         return 0;
     }
 
-    telem_buff[telem_front] = *packet;
-    telem_front = (telem_front + 1) % TELEM_BUFF_SIZE;
+    telem_buff[telem_head] = *packet;
+    telem_head = (telem_head + 1) % TELEM_BUFF_SIZE;
     telem_count++;
     return 1; //so can print instead of A w zero that doesnt print
 }
@@ -27,8 +27,8 @@ int telem_buff_remove(telemetry_packet_s *out)
     if (telem_count == 0) {
         return 0;
     }
-    *out = telem_buff[telem_back];
-    telem_back = (telem_back + 1) % TELEM_BUFF_SIZE;
+    *out = telem_buff[telem_tail];
+    telem_tail = (telem_tail + 1) % TELEM_BUFF_SIZE;
     telem_count--;
     return 1;
 }
@@ -43,7 +43,8 @@ void telemetry_task(void)
     sensor_sample_s sample;
     telemetry_packet_s packet;
 
-    while (sensor_buff_remove(&sample)) {
+    while (sensor_buff_remove(&sample)) 
+    {
         double dt = sample.timestamp - last_t;
         last_t = sample.timestamp;
 
