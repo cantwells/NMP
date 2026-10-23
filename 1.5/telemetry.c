@@ -59,6 +59,9 @@ void telemetry_task(void)
             printf("  telemetry: REJECTED t=%.3f\n", sample.timestamp);
         }
     }
+
+    //printf("[telemetry] t=%.1f alt=%.2f vel=%.2f\n", sample.timestamp, altitude, velocity);
+
 }
 
 void telem_get_latest(telemetry_packet_s *out)

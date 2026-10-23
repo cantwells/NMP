@@ -2,7 +2,7 @@
 
 
 
-buffer testing:
+buffer A overwrite testing:
 
 sensor: pushed t=0.100
 sensor: pushed t=0.200
@@ -19,3 +19,6 @@ sensor: pushed t=1.000
   telemetry: popped t=0.800
   telemetry: popped t=0.900
   telemetry: popped t=1.000
+
+
+Buffer B reject:

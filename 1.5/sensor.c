@@ -20,6 +20,8 @@ static void sensor_buff_add(sensor_sample_s *sample)
     sensor_buff[sensor_front]= *sample;
     sensor_front = (sensor_front+1)% SENSOR_BUFF_SIZE;
     sensor_count++;
+
+    //printf("[bufA] full, dropped oldest\n");
 }
 
 int sensor_buff_remove(sensor_sample_s *out)
@@ -30,7 +32,9 @@ int sensor_buff_remove(sensor_sample_s *out)
     *out = sensor_buff[sensor_back];
     sensor_back = (sensor_back + 1) % SENSOR_BUFF_SIZE;
     sensor_count--;
-    
+        
+    //printf("[bufB] full, rejected t=%.1f\n", packet->sensor.timestamp);
+
     return 1;
 }
 
