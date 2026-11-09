@@ -56,3 +56,13 @@ HAL_StatusTypeDef adxl343_read(I2C_HandleTypeDef *hi2c, adxl343_accel_s *accel)
     return HAL_OK;
 
 }
+
+HAL_StatusTypeDef adxl343_enable(I2C_HandleTypeDef *hi2c)
+{
+    return adxl343_write_reg(hi2c, ADXL343_REG_POWER_CTL, ADXL343_MEASURE);
+
+}
+HAL_StatusTypeDef adxl343_disable(I2C_HandleTypeDef *hi2c)
+{
+    return adxl343_write_reg(hi2c, ADXL343_REG_POWER_CTL, ADXL343_STANDBY);
+}

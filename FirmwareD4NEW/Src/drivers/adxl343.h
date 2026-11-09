@@ -38,7 +38,8 @@ typedef struct {
 HAL_StatusTypeDef adxl343_read_id(I2C_HandleTypeDef *hi2c, uint8_t *id); //prototype
 HAL_StatusTypeDef adxl343_init(I2C_HandleTypeDef *hi2c);
 HAL_StatusTypeDef adxl343_read(I2C_HandleTypeDef *hi2c, adxl343_accel_s*accel);
-
+HAL_StatusTypeDef adxl343_enable(I2C_HandleTypeDef *hi2c);
+HAL_StatusTypeDef adxl343_disable(I2C_HandleTypeDef *hi2c);
 
 
 #endif
