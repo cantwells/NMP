@@ -2,7 +2,7 @@
 //registar address, data structs, and function prototype
 //other files #include it
 #ifndef ADXL343_H
-#define ADXL_343_H
+#define ADXL343_H
 
 #include "main.h"
 #define ADXL343_ADDR              0xA6 //0x53 << 1 shifted by one bit

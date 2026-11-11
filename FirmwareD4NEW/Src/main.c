@@ -29,6 +29,13 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+  #include "logic/tasks.h"
+  typedef struct{
+    void(*run)(void); //which function to call
+    uint32_t interval_ms;
+    uint32_t last_ms;
+  } task_s;
+
 
 /* USER CODE END PTD */
 
@@ -45,7 +52,14 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
-/* USER CODE BEGIN PV */
+/* USER CODE BEGIN PV */ //private variables
+task_s tasks[] = //task list
+{
+  {sample_task, 10, 0},
+  {check_task, 20, 0},
+  {print_task, 100, 0},
+
+};
 
 /* USER CODE END PV */
 
@@ -53,12 +67,30 @@ I2C_HandleTypeDef hi2c1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
-/* USER CODE BEGIN PFP */
+/* USER CODE BEGIN PFP */ //private function prototypes
+
+void run_scheculer(void);
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+//runs my tasks
+void run_scheduler(void)
+{
+    uint32_t now = HAL_GetTick();
+
+    for(uint32_t i = 0; i < 3; i++)
+    {
+      if (now - tasks[i].last_ms >= tasks[i].interval_ms)
+      {
+        tasks[i].last_ms = now;
+        tasks[i].run();
+      }
+    }
+
+
+}
 /* USER CODE BEGIN 0 */
 int _write(int file, char *ptr, int len)
 {
@@ -108,7 +140,8 @@ int main(void)
 
   if(adxl343_init(&hi2c1) == HAL_OK)
   {
-    printf("ADXL343\r\n");
+    adxl343_disable(&hi2c1);
+    printf("ADXL343 ready, press key to start\r\n");
   }
   else
   {
@@ -124,18 +157,11 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
-  
-    adxl343_accel_s accel;
-    if(adxl343_read(&hi2c1, &accel)== HAL_OK)
-    {
-      printf("X: %.3f Y: %.3f Z: %.3f g\r\n", accel.x, accel.y,accel.z);
-    }
-    HAL_Delay(100);
-
-
-    //LED light up stuff
+    run_scheduler();
+  }
+    //LED light up stuff 
+    /*
     if(HAL_GPIO_ReadPin(BUTTON_GPIO_Port, BUTTON_Pin) == GPIO_PIN_SET)
     {
       HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
@@ -144,7 +170,8 @@ int main(void)
     {
       HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
     }
-  }
+  } 
+  */
   /* USER CODE END 3 */
 }
 
